@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Pros — Master Board Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090b0e;
+      --panel: #13171d;
+      --panel-2: #1a2028;
+      --line: #2b3340;
+      --text: #f3f6fa;
+      --muted: #8f9aab;
+      --gold: #e8a317;
+      --good: #3dd68c;
+      --bad: #ff6b6b;
+      --orlando: #e8a317;
+      --jax: #5aa7ff;
+      --tampa: #3dd68c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--bg); color: var(--text); font-family: Inter, system-ui, sans-serif; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    .app-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      padding: 12px 20px; border-bottom: 1px solid var(--line); background: #0e1217; position: sticky; top: 0; z-index: 30;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(145deg, #f3c15a, #c57a08);
+      color: #1a1204; font-weight: 800; display: grid; place-items: center; font-family: Oswald, sans-serif;
+    }
+    .brand h1 { font-size: 14px; letter-spacing: .06em; text-transform: uppercase; font-family: Oswald, sans-serif; }
+    .brand span { display: block; color: var(--muted); font-size: 11px; font-weight: 500; text-transform: none; letter-spacing: 0; font-family: Inter, sans-serif; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tab { border: 1px solid var(--line); background: transparent; color: var(--muted); padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+    .tab.active { background: var(--gold); color: #1a1204; border-color: var(--gold); }
+    .wrap { max-width: 1360px; margin: 0 auto; padding: 18px; }
+    .hidden { display: none !important; }
+    .kicker { color: var(--gold); font-weight: 700; letter-spacing: .14em; font-size: 11px; text-transform: uppercase; }
+    h2.display { font-family: Oswald, sans-serif; text-transform: uppercase; font-size: 30px; line-height: 1.05; margin: 6px 0 8px; }
+    .muted { color: var(--muted); }
+    .tiny { font-size: 12px; color: var(--muted); }
+    .btn { border: 0; border-radius: 10px; padding: 11px 14px; font-weight: 700; background: var(--panel-2); }
+    .btn.gold { background: var(--gold); color: #1a1204; }
+    .btn.ghost { border: 1px solid var(--line); background: transparent; }
+    .btn.bad { background: #3a1c1c; color: var(--bad); }
+    .btn.good { background: #163324; color: var(--good); }
+    .btn.sm { padding: 8px 10px; font-size: 13px; }
+    .city-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
+    .city { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 12px 14px; min-width: 150px; text-align: left; }
+    .city.active { box-shadow: 0 0 0 1px var(--gold) inset; border-color: var(--gold); }
+    .city.orlando.active { border-color: var(--orlando); box-shadow: 0 0 0 1px var(--orlando) inset; }
+    .city.jax.active { border-color: var(--jax); box-shadow: 0 0 0 1px var(--jax) inset; }
+    .city.tampa.active { border-color: var(--tampa); box-shadow: 0 0 0 1px var(--tampa) inset; }
+    .city b { display: block; font-size: 16px; }
+    .city .meta { margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .command { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    .dot.orlando { background: var(--orlando); }
+    .dot.jax { background: var(--jax); }
+    .dot.tampa { background: var(--tampa); }
+    .dash-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .board { display: grid; grid-template-columns: 270px 1fr; gap: 14px; }
+    .job-list { display: flex; flex-direction: column; gap: 8px; max-height: 820px; overflow: auto; }
+    .job { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 11px; cursor: pointer; }
+    .job.active { border-color: var(--gold); }
+    .pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+    .pill { font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 999px; background: #2a323d; }
+    .pill.orlando { background: #2a2416; color: #f3c15a; }
+    .pill.jax { background: #162433; color: #7eb6ff; }
+    .pill.tampa { background: #163024; color: #7ee0a5; }
+    .pill.confirmed { background: #163324; color: #7ee0a5; }
+    .pill.hold { background: #332a16; color: #ffd27a; }
+    .pill.blocked { background: #331616; color: #ff9b9b; }
+    .pill.done { background: #1d2430; color: #93a0b0; }
+    .cal-wrap { overflow: auto; max-height: 820px; border-radius: 12px; }
+    .cal {
+      display: grid;
+      min-width: 720px;
+      gap: 4px;
+    }
+    .time-col, .tech-col { display: grid; gap: 4px; }
+    .tick, .open, .block {
+      min-height: 34px; border-radius: 7px; font-size: 11px; display: flex; align-items: center;
+    }
+    .tick { color: var(--muted); justify-content: flex-end; padding-right: 8px; font-weight: 600; }
+    .tick.half { color: #5d6774; font-weight: 500; }
+    .open {
+      background: #122017; border: 1px dashed #2a4a36; cursor: pointer; color: #6e9b80; padding: 0 8px;
+    }
+    .open:hover { background: #173224; border-style: solid; color: #b7f0cc; }
+    .block {
+      border: 1px solid #5a4318; background: linear-gradient(180deg, #3a2c16, #2a2214); padding: 6px 8px;
+      cursor: pointer; align-items: flex-start; flex-direction: column; justify-content: flex-start; gap: 2px;
+    }
+    .block.blocked { border-color: #6a2a2a; background: linear-gradient(180deg, #3a1c1c, #241414); }
+    .block.hold { border-color: #7a5a18; }
+    .block:hover { filter: brightness(1.08); }
+    .block b { font-size: 12px; line-height: 1.2; }
+    .hero {
+      background: linear-gradient(180deg, #1a1510 0%, #14181e 70%);
+      border: 1px solid var(--line); border-radius: 18px; padding: 32px; display: grid; grid-template-columns: 1.25fr .75fr; gap: 22px;
+    }
+    .hero h2 { font-family: Oswald, sans-serif; font-size: 40px; text-transform: uppercase; line-height: 1.05; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 600; }
+    select, input, textarea { background: #0f1318; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; width: 100%; }
+    select:focus, input:focus, textarea:focus { border-color: var(--gold); }
+    .modal-bg { position: fixed; inset: 0; background: #00000099; display: grid; place-items: center; z-index: 60; padding: 16px; }
+    .modal { width: min(880px, 100%); max-height: 92vh; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+    .modal.sheet { width: min(420px, 100%); }
+    .notice { background: #1c1810; border: 1px solid #5a4318; color: #f3d7a1; border-radius: 12px; padding: 12px; font-size: 13px; line-height: 1.5; }
+    .kv { display: grid; grid-template-columns: 140px 1fr; gap: 6px 10px; font-size: 14px; }
+    .kv b { color: var(--muted); font-weight: 600; }
+    .tech-job { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .toast {
+      position: fixed; right: 18px; bottom: 18px; background: #1b2418; border: 1px solid #3dd68c66;
+      color: #d9ffe8; padding: 14px 16px; border-radius: 12px; z-index: 80; max-width: 380px; box-shadow: 0 16px 40px #0008;
+    }
+    .actions { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .camp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+    .camp {
+      text-align: left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px;
+    }
+    .camp.active { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+    .camp b { display: block; font-size: 14px; margin-bottom: 4px; }
+    .lead-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .lead-table th { text-align: left; color: var(--muted); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 8px; border-bottom: 1px solid var(--line); }
+    .lead-table td { padding: 10px 8px; border-bottom: 1px solid #222a33; vertical-align: top; }
+    .lead-table tr:hover td { background: #1a2028; }
+    .preview {
+      background: #0f1318; border: 1px solid var(--line); border-radius: 12px; padding: 12px; font-size: 13px;
+      white-space: pre-wrap; line-height: 1.45; color: #d7deea; max-height: 220px; overflow: auto;
+    }
+    .hold-rail {
+      margin: 14px 0 4px; padding: 14px; border-radius: 16px;
+      background: linear-gradient(180deg, #5a3d0c, #2a1c08);
+      border: 2px solid #e8a317; box-shadow: 0 0 0 1px #e8a31788, 0 12px 30px #e8a31722;
+    }
+    .hold-rail.empty { border-color: #7a5a18; box-shadow: none; background: #1c1810; }
+    .hold-rail h3 { font-size: 16px; margin: 4px 0 8px; }
+    .hold-item {
+      display: flex; justify-content: space-between; gap: 10px; align-items: center;
+      background: #16120c; border: 1px solid #5a4318; border-radius: 12px; padding: 10px 12px; margin-top: 8px;
+    }
+    .addon-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .addon {
+      border: 1px solid var(--line); background: #0f1318; border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--muted);
+    }
+    .addon.on { border-color: var(--gold); color: #f3d7a1; background: #2a2110; }
+    .svc {
+      text-align: left; width: 100%; background: var(--panel-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 8px;
+    }
+    .svc:hover { border-color: #5a4a28; }
+    .price-live { font-family: Oswald, sans-serif; font-size: 28px; color: var(--gold); }
+    .tab .badge {
+      display: inline-block; min-width: 18px; padding: 1px 6px; margin-left: 6px; border-radius: 999px;
+      background: #e8a317; color: #1a1204; font-size: 11px;
+    }
+    .phone-stage { display: flex; justify-content: center; gap: 28px; align-items: start; flex-wrap: wrap; }
+    .phone {
+      width: 390px; max-width: 100%; background: #0b0d11; border: 8px solid #2a3038; border-radius: 36px;
+      box-shadow: 0 30px 60px #0008; overflow: hidden; min-height: 720px;
+    }
+    .phone-bar {
+      display: flex; justify-content: space-between; align-items: center; padding: 16px 16px 10px;
+      background: #12161c; border-bottom: 1px solid var(--line);
+    }
+    .phone-cal { padding: 10px 12px 20px; }
+    .trow { display: grid; grid-template-columns: 64px 1fr; gap: 8px; margin-bottom: 4px; }
+    .tjob {
+      background: linear-gradient(180deg, #3a2c16, #241c12); border: 1px solid #7a5a18;
+      border-radius: 12px; padding: 10px; text-align: left; width: 100%;
+    }
+    .tjob.blocked { background: #1a1212; border-color: #5a2a2a; }
+    .tfree { background: #10161a; border: 1px dashed #2a3340; border-radius: 12px; min-height: 28px; }
+    .ping {
+      background: #1c1810; border: 1px solid #7a5a18; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; text-align: left;
+    }
+    .login-card { padding: 22px 18px; }
+    .tech-pick {
+      width: 100%; text-align: left; background: var(--panel-2); border: 1px solid var(--line);
+      border-radius: 14px; padding: 14px; margin-top: 8px;
+    }
+    #invoiceModal { z-index: 90; align-items: start; padding: 24px 12px; overflow: auto; }
+    .invoice-wrap { width: min(760px, 100%); }
+    .invoice {
+      background: #f7f4ee; color: #161410; border-radius: 6px; overflow: hidden;
+      box-shadow: 0 24px 60px #0008; font-family: Inter, Georgia, serif;
+    }
+    .invoice-top {
+      position: relative; overflow: hidden;
+      display: flex; justify-content: space-between; gap: 16px; align-items: center;
+      padding: 26px 32px 22px;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(120,210,255,.38), transparent 44%),
+        linear-gradient(115deg, #05233d 0%, #0a4a7a 52%, #1477b4 100%);
+      color: #f4f8ff;
+    }
+    .invoice-top:after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px;
+      background: linear-gradient(90deg, #f3c15a, #7ec8ff, #f3c15a);
+    }
+    .invoice-brand { display: flex; gap: 14px; align-items: center; position: relative; z-index: 1; }
+    .invoice-mark {
+      width: 64px; height: 64px; flex: 0 0 64px; border-radius: 50%;
+      background: radial-gradient(circle at 30% 28%, #fff, #cfefff 36%, #1a6eab 72%, #06233d);
+      border: 3px solid #f3c15a; box-shadow: 0 8px 20px #0006;
+      color: #062033; font-weight: 800; display: grid; place-items: center;
+      font-family: Oswald, sans-serif; font-size: 18px; letter-spacing: .04em;
+    }
+    .invoice-top h3 { font-family: Oswald, sans-serif; letter-spacing: .08em; text-transform: uppercase; font-size: 26px; line-height: 1; }
+    .invoice-top h3 em { font-style: normal; color: #8fd3ff; font-weight: 500; }
+    .invoice-tag { margin-top: 6px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #cfe8ff; }
+    .invoice-right { text-align: right; position: relative; z-index: 1; font-size: 13px; color: #d7ecff; }
+    .invoice-body { padding: 24px 32px 28px; }
+    .invoice-meta { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; margin-bottom: 22px; }
+    .invoice table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .invoice th { text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #6b6256; border-bottom: 1px solid #d9d1c4; padding: 8px 0; }
+    .invoice td { padding: 11px 0; border-bottom: 1px solid #e8e1d6; vertical-align: top; }
+    .invoice td.amt, .invoice th.amt { text-align: right; }
+    .invoice-total { display: flex; justify-content: flex-end; margin-top: 16px; }
+    .invoice-total table { width: 260px; }
+    .invoice-pay {
+      margin-top: 22px; padding: 16px; background: #efe8dc; border: 1px solid #d9d1c4; border-radius: 10px;
+    }
+    .invoice-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    @media (max-width: 980px) {
+      .command, .board, .hero, .form-grid, .tech-job, .camp-grid { grid-template-columns: 1fr; }
+      .hero h2 { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-bar">
+    <div class="brand">
+      <div class="logo">DP</div>
+      <h1>Detail Pros <span>Click a slot. Move it. Cancel it. Reassign it.</span></h1>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-view="admin" id="tabAdmin">Thomas master</button>
+      <button class="tab" data-view="public">City websites</button>
+      <button class="tab" data-view="tech" id="tabTech">Tech phone</button>
+      <button class="tab" data-view="leads">Lead database</button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section id="view-admin">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end">
+        <div>
+          <div class="kicker">Owner command center</div>
+          <h2 class="display">Tap any square.</h2>
+          <p class="muted">Empty slot = add a job. Filled slot = cancel, change tech, or move the time. 30-minute board so 8:00 and 8:30 can run at the same time on two trucks.</p>
+        </div>
+        <div class="dash-actions">
+          <select id="dayFilter"></select>
+          <button class="btn gold" id="addJobBtn">+ Add phone job</button>
+          <button class="btn ghost" id="notifyBtn">Notify tech</button>
+          <button class="btn ghost" id="blockBtn">Block time</button>
+        </div>
+      </div>
+      <div class="city-row" id="cityChips"></div>
+      <div id="holdRail"></div>
+      <div class="command" id="commandCards"></div>
+      <div class="board">
+        <div class="card">
+          <div class="tiny" id="listLabel">Today’s jobs</div>
+          <div class="job-list" id="adminJobs" style="margin-top:10px"></div>
+        </div>
+        <div class="card">
+          <div class="tiny" id="calLabel">Who is free</div>
+          <div class="cal-wrap" style="margin-top:10px"><div class="cal" id="adminCal"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-public" class="hidden">
+      <div class="city-row" id="publicCities"></div>
+      <div class="hero">
+        <div>
+          <div class="kicker" id="publicKicker">Mobile detailing</div>
+          <h2 id="publicTitle">Orlando</h2>
+          <p class="muted" id="publicBlurb" style="margin-top:10px;max-width:540px"></p>
+          <div style="display:flex;gap:8px;margin-top:18px;flex-wrap:wrap">
+            <button class="btn gold" id="openBook">Instant Book</button>
+            <button class="btn ghost" id="callBtn">Call this shop</button>
+          </div>
+          <p class="tiny" style="margin-top:10px">Customer sees this button. Instant packages lock the slot. Quote packages notify Thomas.</p>
+        </div>
+        <div class="card">
+          <div class="tiny">Open start times this site can offer</div>
+          <div id="publicSlots" style="margin-top:10px"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-tech" class="hidden">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:16px">
+        <div>
+          <div class="kicker">Tech login</div>
+          <h2 class="display">What the driver sees.</h2>
+          <p class="muted">His phone. His name. His day. Holds do not show until Thomas confirms them.</p>
+        </div>
+      </div>
+      <div class="phone-stage">
+        <div class="phone" id="techBoard"></div>
+        <div class="card" style="max-width:360px">
+          <div class="kicker">Demo note</div>
+          <p class="muted" style="margin-top:8px">Tap a name to log in. Tap a gold block to open the ticket — address, water, dogs, which car, money. They cannot move other cities. They cannot see Thomas’s whole board.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-leads" class="hidden">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:end">
+        <div>
+          <div class="kicker">Lead database</div>
+          <h2 class="display">Every customer. One list.</h2>
+          <p class="muted">Jobs write the file. Campaigns text the file. Pick a campaign, pick a city, download the list.</p>
+        </div>
+        <div class="dash-actions">
+          <input id="leadSearch" placeholder="Search name, phone, car" style="min-width:220px">
+          <button class="btn ghost" id="addLeadBtn">+ Add client</button>
+        </div>
+      </div>
+      <div class="camp-grid" id="campButtons"></div>
+      <div class="card" id="campWizard" style="margin-bottom:14px"></div>
+      <div class="card" style="overflow:auto">
+        <div class="tiny" id="leadCount">Clients</div>
+        <table class="lead-table" style="margin-top:8px">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Car</th>
+              <th>Contact</th>
+              <th>Address</th>
+              <th>Last job / cost</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody id="leadBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-bg hidden" id="modal"><div class="modal" id="modalBody"></div></div>
+  <div class="modal-bg hidden" id="invoiceModal"><div class="invoice-wrap" id="invoiceBody"></div></div>
+  <div class="toast hidden" id="toast"></div>
+
+  <script>
+    const MARKETS = [
+      { id: "orlando", name: "Orlando", phone: "407-456-0031", techs: ["Rico", "Diego"] },
+      { id: "jax", name: "Jacksonville", phone: "904-555-0194", techs: ["Andre", "Cam"] },
+      { id: "tampa", name: "Tampa", phone: "813-555-0172", techs: ["Luis"] }
+    ];
+    const SLOTS = buildSlots("8:00 AM", "5:30 PM");
+    const DURS = [
+      { mins: 30, label: "30 min" },
+      { mins: 60, label: "1 hour" },
+      { mins: 90, label: "1.5 hours" },
+      { mins: 120, label: "2 hours" },
+      { mins: 150, label: "2.5 hours" },
+      { mins: 180, label: "3 hours" },
+      { mins: 240, label: "4 hours" }
+    ];
+    const SIZES = [
+      { id:"coupe", name:"Coupe / light truck" },
+      { id:"sedan", name:"Sedan" },
+      { id:"smallsuv", name:"2-door truck / small SUV" },
+      { id:"full", name:"Full SUV / large truck" }
+    ];
+    const ADDONS = [
+      { id:"pet", name:"Pet hair removal", price:30 },
+      { id:"san", name:"Interior sanitizing", price:30 },
+      { id:"rain", name:"Rain-X treatment", price:16 },
+      { id:"cwax", name:"Ceramic wax", price:30 },
+      { id:"stroll", name:"Child stroller cleaning", price:25 },
+      { id:"lights", name:"Headlight restoration", price:69 }
+    ];
+    const SERVICES = [
+      { id:"sig", name:"Signature Detail", instant:true, mins:90, prices:{coupe:169.95, sedan:179.95, smallsuv:189.95, full:219.95}, blurb:"Wash, wax, light interior. Clock is known. Instant." },
+      { id:"wax", name:"Premium Wax", instant:true, mins:60, prices:{coupe:99.95, sedan:99.95, smallsuv:99.95, full:99.95}, blurb:"Hand wash + carnauba. Instant. Ceramic wax is an add-on." },
+      { id:"moto", name:"Motorcycle Detail", instant:true, mins:60, prices:{coupe:89.95, sedan:89.95, smallsuv:89.95, full:89.95}, blurb:"One bike. Instant." },
+      { id:"ult", name:"Ultimate Detail", instant:false, mins:150, prices:{coupe:199.95, sedan:219.95, smallsuv:239.95, full:279.95}, blurb:"Full interior + clay. Time slips. Thomas confirms." },
+      { id:"pint", name:"Premium Interior", instant:false, mins:120, prices:{coupe:139.95, sedan:159.95, smallsuv:169.95, full:189.95}, blurb:"Mess unknown until someone looks. Request only." },
+      { id:"boat", name:"Boat Detail", instant:false, mins:180, prices:{coupe:0, sedan:0, smallsuv:0, full:0}, blurb:"Quote. Owner texts or calls." },
+      { id:"rv", name:"RV Detail", instant:false, mins:240, prices:{coupe:0, sedan:0, smallsuv:0, full:0}, blurb:"Half day. Owner texts or calls." },
+      { id:"cer", name:"Ceramic / correction quote", instant:false, mins:30, prices:{coupe:0, sedan:0, smallsuv:0, full:0}, blurb:"Not a bookable clock. Request only." }
+    ];
+    const PACKAGES = SERVICES.map(s => s.name);
+    const DAYS = buildDays(5);
+    const seed = [
+      J({ market:"orlando", day:0, time:"8:00 AM", mins:150, tech:"Rico", status:"confirmed", customer:"Elena Ruiz", phone:"407-555-0142",
+        address:"8124 Lake Nona Blvd, Orlando, FL 32827", unit:"Gate 4419", water:"Hose left of garage", power:"Outdoor outlet",
+        parking:"White Telluride in driveway", dogs:"Two small dogs inside. Don’t open door.", hoa:"Gated. Text on arrival.",
+        vehicle:"2025 Kia Telluride · white", condition:"Kids + sand. Interior heavy.", pkg:"Premium Interior", addons:"Pet hair",
+        price:"$189.95", deposit:"$50 Zelle", source:"Phone", notes:"Not home after 9:15. Key in lockbox.", eta:"Text 15 min out" }),
+      J({ market:"orlando", day:0, time:"8:30 AM", mins:120, tech:"Diego", status:"confirmed", customer:"Tom Bradley", phone:"407-555-0190",
+        address:"3505 Lake Lynda Dr, Orlando, FL 32817", unit:"Ste 200 lot", water:"Spigot behind dumpster", power:"Generator",
+        parking:"Black F-150. Don’t block fire lane.", dogs:"None", hoa:"Office park",
+        vehicle:"2019 Ford F-150 · black", condition:"Oxidation on hood.", pkg:"Ultimate Detail", addons:"Headlights",
+        price:"$279.95", deposit:"Card on file", source:"Repeat / phone", notes:"Starts 8:30 so it overlaps Rico’s 8:00 job. Two trucks, same city, no collision.", eta:"Call on site" }),
+      J({ market:"orlando", day:0, time:"12:00 PM", mins:90, tech:"Rico", status:"hold", customer:"Website request", phone:"407-555-0188",
+        address:"Lake Nona area", unit:"", water:"", power:"", parking:"", dogs:"", hoa:"",
+        vehicle:"Sedan", condition:"", pkg:"Signature Detail", addons:"", price:"", deposit:"Unconfirmed",
+        source:"Website request", notes:"Hold. Thomas confirms or kills it.", eta:"Confirm by phone" }),
+      J({ market:"jax", day:0, time:"8:00 AM", mins:180, tech:"Andre", status:"confirmed", customer:"James Cole", phone:"904-555-0118",
+        address:"11941 Sonnet Ave, St. Augustine, FL 32092", unit:"", water:"No hose — bring tank", power:"Yes",
+        parking:"Boat behind the truck. Start with the boat.", dogs:"Large dog fenced in back.", hoa:"",
+        vehicle:"2014 Sea Ray 240 + 2009 Tahoe", condition:"Waterline stain.", pkg:"Boat Detail", addons:"Vinyl clean",
+        price:"Quote on site", deposit:"None", source:"Phone", notes:"Two units. Boat first.", eta:"Text" }),
+      J({ market:"jax", day:0, time:"8:30 AM", mins:120, tech:"Cam", status:"confirmed", customer:"Priya Shah", phone:"904-555-0166",
+        address:"13720 Old St Augustine Rd #8, Jacksonville, FL 32258", unit:"Suite lot", water:"Yes", power:"Yes",
+        parking:"Silver Accord closest to the door", dogs:"None", hoa:"",
+        vehicle:"2021 Honda Accord · silver", condition:"Light interior.", pkg:"Signature Detail", addons:"",
+        price:"$169.95", deposit:"Paid", source:"Website request", notes:"Staggered 8:30 start against Andre’s 8:00 boat job.", eta:"Text 15 min out" }),
+      J({ market:"tampa", day:0, time:"8:30 AM", mins:150, tech:"Luis", status:"confirmed", customer:"Dana Ortiz", phone:"813-555-0120",
+        address:"3902 Henderson Blvd, Tampa, FL 33629", unit:"Alley access", water:"Yes — side yard", power:"Yes",
+        parking:"Blue Wrangler. Park on the apron.", dogs:"Friendly. Will be inside.", hoa:"",
+        vehicle:"2018 Jeep Wrangler · blue", condition:"Beach sand in carpets.", pkg:"Premium Interior", addons:"Pet hair",
+        price:"$189.95", deposit:"$50", source:"Phone", notes:"8:30 start. Next slot after this is 11:00.", eta:"Text" }),
+      J({ market:"tampa", day:0, time:"11:00 AM", mins:60, tech:"Luis", status:"blocked", customer:"TRAVEL", phone:"",
+        address:"", unit:"", water:"", power:"", parking:"", dogs:"", hoa:"",
+        vehicle:"", condition:"", pkg:"Blocked", addons:"", price:"", deposit:"",
+        source:"Internal", notes:"Drive time after the 8:30 job.", eta:"" }),
+      J({ market:"tampa", day:0, time:"12:30 PM", mins:120, tech:"Luis", status:"confirmed", customer:"Chris Nolan", phone:"813-555-0144",
+        address:"401 Channelside Dr, Tampa, FL 33602", unit:"Visitor garage L2", water:"No — tank", power:"Generator",
+        parking:"Gray Tesla in visitor spot 18", dogs:"None", hoa:"Condo. No runoff into drains.",
+        vehicle:"2023 Tesla Model Y · gray", condition:"Light film only.", pkg:"Signature Detail", addons:"",
+        price:"$189.95", deposit:"Card", source:"Phone", notes:"Condo rules. Water from the tank only.", eta:"Text in garage" })
+    ];
+
+    const CAMPAIGNS = [
+      { id:"holiday", name:"Holiday special", blurb:"Thanksgiving / Christmas wash-and-wax. Book this week.",
+        sms:"Hey {name} — Detail Pros {city}. Holiday special on your {car}: $40 off Signature this week. Reply YES and we’ll lock a time. {phone}" },
+      { id:"winback", name:"Comeback incentive", blurb:"Haven’t seen them in 90+ days. $30 off to come back.",
+        sms:"Hey {name}, it’s Detail Pros {city}. It’s been a minute since the {car}. $30 off if we see you this month. Reply YES." },
+      { id:"pollen", name:"Pollen / summer film", blurb:"Florida season blast. Exterior + rain-X push.",
+        sms:"{name} — yellow film season in {city}. We can knock it off the {car} this week. $20 off exterior. Reply YES." },
+      { id:"coating", name:"Ceramic upsell", blurb:"Past Ultimate / oxidation jobs. Protection pitch.",
+        sms:"{name}, last time we corrected the {car}. Ceramic would lock that in. Want a 10-min quote this week?" }
+    ];
+    const leadSeed = [
+      { name:"Elena Ruiz", phone:"407-555-0142", email:"elena@email.com", market:"orlando", address:"8124 Lake Nona Blvd, Orlando, FL 32827", vehicle:"2025 Kia Telluride · white", lastJob:"Premium Interior + pet hair", cost:"$189.95", lastSeen:"Today", notes:"Kids + sand. Gate 4419. Two dogs inside." },
+      { name:"Tom Bradley", phone:"407-555-0190", email:"tom.b@email.com", market:"orlando", address:"3505 Lake Lynda Dr, Orlando, FL 32817", vehicle:"2019 Ford F-150 · black", lastJob:"Ultimate Detail + headlights", cost:"$279.95", lastSeen:"Today", notes:"Repeat. Wants before/after texts. Hood oxidation." },
+      { name:"Maya Chen", phone:"407-555-0133", email:"maya.c@email.com", market:"orlando", address:"91 E Pine St, Orlando, FL 32801", vehicle:"2022 Tesla Model 3 · white", lastJob:"Signature Detail", cost:"$169.95", lastSeen:"4 months ago", notes:"Downtown condo. No hose. Good coating candidate." },
+      { name:"Robert Hale", phone:"407-555-0177", email:"rhale@email.com", market:"orlando", address:"Windermere, FL 34786", vehicle:"2016 Tahoe · black", lastJob:"Premium Interior", cost:"$219.95", lastSeen:"7 months ago", notes:"Fleet of 2. Win-back. Pet hair every visit." },
+      { name:"James Cole", phone:"904-555-0118", email:"jcole@email.com", market:"jax", address:"11941 Sonnet Ave, St. Augustine, FL 32092", vehicle:"2014 Sea Ray 240 + 2009 Tahoe", lastJob:"Boat Detail + vinyl", cost:"Quote", lastSeen:"Today", notes:"Boat first. Bring tank. Dog in backyard." },
+      { name:"Priya Shah", phone:"904-555-0166", email:"priya@email.com", market:"jax", address:"13720 Old St Augustine Rd #8, Jacksonville, FL 32258", vehicle:"2021 Honda Accord · silver", lastJob:"Signature Detail", cost:"$169.95", lastSeen:"Today", notes:"Office park. Light interior." },
+      { name:"Derek Holt", phone:"904-555-0104", email:"dholt@email.com", market:"jax", address:"11481 Old St Augustine Rd, Jacksonville, FL 32258", vehicle:"2018 RAM 1500 · gray", lastJob:"Ultimate Detail", cost:"$279.95", lastSeen:"5 months ago", notes:"Work truck. Heavy film. Holiday special fit." },
+      { name:"Alisha Grant", phone:"904-555-0181", email:"agrant@email.com", market:"jax", address:"St. Johns, FL 32259", vehicle:"2020 Highlander · white", lastJob:"Premium Interior", cost:"$189.95", lastSeen:"11 months ago", notes:"Quiet. Prefers text only. Win-back." },
+      { name:"Dana Ortiz", phone:"813-555-0120", email:"dana@email.com", market:"tampa", address:"3902 Henderson Blvd, Tampa, FL 33629", vehicle:"2018 Jeep Wrangler · blue", lastJob:"Premium Interior + pet hair", cost:"$189.95", lastSeen:"Today", notes:"Beach sand. Home all day." },
+      { name:"Chris Nolan", phone:"813-555-0144", email:"chris.n@email.com", market:"tampa", address:"401 Channelside Dr, Tampa, FL 33602", vehicle:"2023 Tesla Model Y · gray", lastJob:"Signature Detail", cost:"$189.95", lastSeen:"Today", notes:"Condo. Tank only. No drain runoff." },
+      { name:"Sofia Reyes", phone:"813-555-0199", email:"sofia.r@email.com", market:"tampa", address:"South Tampa, FL 33629", vehicle:"2015 BMW 3 Series · black", lastJob:"Paint correction quote", cost:"$450 quoted", lastSeen:"6 months ago", notes:"Coating upsell. Never booked the ceramic." },
+      { name:"Mark Velez", phone:"813-555-0152", email:"mvelez@email.com", market:"tampa", address:"Westchase, FL 33626", vehicle:"2012 F-250 · white", lastJob:"Exterior only", cost:"$129.95", lastSeen:"8 months ago", notes:"Work truck. Pollen magnet. Seasonal blast." }
+    ];
+
+    let jobs = load() || seed;
+    let leads = loadLeads() || leadSeed;
+    let ui = { view:"admin", market:"all", publicMarket:"orlando", day:0, selected: jobs[0].id, camp: null, campCity: "orlando", leadQ: "", holdOnly:false, addons:[], size:"sedan", svc:"sig", techUser:null, techDay:0 };
+
+    function buildDays(n) {
+      const out = [];
+      const start = new Date();
+      for (let i = 0; i < n; i++) {
+        const d = new Date(start); d.setDate(start.getDate() + i);
+        out.push({ id:i, label:d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}) });
+      }
+      return out;
+    }
+    function parseMins(label) {
+      const [t, ap] = label.split(" ");
+      let [h, m] = t.split(":").map(Number);
+      if (ap === "PM" && h !== 12) h += 12;
+      if (ap === "AM" && h === 12) h = 0;
+      return h * 60 + m;
+    }
+    function labelMins(mins) {
+      let h = Math.floor(mins / 60), m = mins % 60;
+      const ap = h >= 12 ? "PM" : "AM";
+      const h12 = ((h + 11) % 12) + 1;
+      return h12 + ":" + String(m).padStart(2,"0") + " " + ap;
+    }
+    function buildSlots(from, to) {
+      const out = [];
+      for (let m = parseMins(from); m <= parseMins(to); m += 30) out.push(labelMins(m));
+      return out;
+    }
+    function uid() { return Math.random().toString(36).slice(2,9); }
+    function J(o) { return { id: uid(), created: Date.now(), mins: o.mins || 120, ...o }; }
+    function save() { localStorage.setItem("dp_jobs_v4", JSON.stringify(jobs)); }
+    function load() { try { return JSON.parse(localStorage.getItem("dp_jobs_v4")); } catch { return null; } }
+    function saveLeads() { localStorage.setItem("dp_leads_v1", JSON.stringify(leads)); }
+    function loadLeads() { try { return JSON.parse(localStorage.getItem("dp_leads_v1")); } catch { return null; } }
+    const TECH_PHONES = { Rico:"407-555-2101", Diego:"407-555-2102", Andre:"904-555-2103", Cam:"904-555-2104", Luis:"813-555-2105" };
+    let notes = loadNotes() || [];
+    function saveNotes() { localStorage.setItem("dp_notes_v1", JSON.stringify(notes)); }
+    function loadNotes() { try { return JSON.parse(localStorage.getItem("dp_notes_v1")); } catch { return null; } }
+    function notesFor(name) { return notes.filter(n => n.to === "ALL" || n.to === name).sort((a,b)=>b.at-a.at); }
+    function M(id) { return MARKETS.find(m => m.id === id); }
+    function list(day, market) { return jobs.filter(j => j.day === day && (market === "all" || j.market === market) && j.status !== "cancelled"); }
+    function span(j) { return { start: parseMins(j.time), end: parseMins(j.time) + (j.mins || 120) }; }
+    function overlaps(a, b) { return a.start < b.end && b.start < a.end; }
+    function conflict(market, day, time, mins, tech, exceptId) {
+      const next = { start: parseMins(time), end: parseMins(time) + mins };
+      return jobs.find(j => j.market === market && j.day === day && j.tech === tech && j.id !== exceptId && j.status !== "cancelled" && overlaps(span(j), next));
+    }
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window._t);
+      window._t = setTimeout(() => el.classList.add("hidden"), 4200);
+    }
+    function endLabel(j) { return labelMins(parseMins(j.time) + (j.mins || 120)); }
+    function svcByName(name) { return SERVICES.find(s => s.name === name); }
+    function money(n) { return "$" + Number(n).toFixed(2); }
+    function calcPrice(svcId, sizeId, addonIds) {
+      const s = SERVICES.find(x => x.id === svcId);
+      if (!s) return "";
+      const extra = ADDONS.filter(a => addonIds.includes(a.id)).reduce((n,a)=>n+a.price,0);
+      const base = s.prices[sizeId] || 0;
+      if (!base) return extra ? "Quote + " + money(extra) : "Quote";
+      return money(base + extra);
+    }
+    function addonNames(ids) { return ADDONS.filter(a => ids.includes(a.id)).map(a => a.name).join(", "); }
+    function holdsOpen() { return jobs.filter(j => j.status === "hold"); }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        tab.classList.add("active");
+        ui.view = tab.dataset.view;
+        ["admin","public","tech","leads"].forEach(v => document.getElementById("view-"+v).classList.toggle("hidden", v !== ui.view));
+        render();
+      };
+    });
+    document.getElementById("dayFilter").innerHTML = DAYS.map(d => `<option value="${d.id}">${d.label}</option>`).join("");
+    document.getElementById("dayFilter").onchange = e => { ui.day = Number(e.target.value); render(); };
+    document.getElementById("addJobBtn").onclick = () => openJob();
+    document.getElementById("blockBtn").onclick = () => openJob({ block:true });
+    document.getElementById("notifyBtn").onclick = () => openNotify();
+    document.getElementById("openBook").onclick = () => openBook();
+    document.getElementById("callBtn").onclick = () => toast("Demo only. Live site dials " + M(ui.publicMarket).phone);
+    function techMarket(name) { return MARKETS.find(m => m.techs.includes(name)); }
+    document.getElementById("leadSearch").oninput = e => { ui.leadQ = e.target.value.toLowerCase(); renderLeads(); };
+    document.getElementById("addLeadBtn").onclick = () => openLead();
+
+    function render() { renderChips(); renderHoldRail(); renderCommand(); renderAdmin(); renderPublic(); renderTech(); renderLeads(); }
+    function setMarket(id) { ui.market = id; render(); }
+    function countLine(id) {
+      const rows = list(ui.day, id);
+      return rows.filter(j => j.status === "confirmed").length + " booked · " + rows.filter(j => j.status === "hold").length + " hold";
+    }
+    function renderChips() {
+      const chips = [{ id:"all", name:"All cities" }, ...MARKETS];
+      document.getElementById("cityChips").innerHTML = chips.map(c => `
+        <button class="city ${c.id} ${ui.market===c.id?"active":""}" onclick="setMarket('${c.id}')">
+          <b>${c.id==="all"?"All cities":c.name}</b>
+          <div class="meta">${countLine(c.id)}</div>
+        </button>`).join("");
+    }
+    function nextOpen(marketId) {
+      const m = M(marketId);
+      for (const time of SLOTS) for (const tech of m.techs) if (!conflict(marketId, ui.day, time, 90, tech)) return time + " · " + tech;
+      return "full";
+    }
+    function renderCommand() {
+      document.getElementById("commandCards").innerHTML = MARKETS.map(m => {
+        const rows = list(ui.day, m.id);
+        return `<div class="card">
+          <div class="tiny"><span class="dot ${m.id}"></span>${m.name} · ${m.techs.join(" + ")}</div>
+          <b style="display:block;font-size:22px;margin:6px 0 4px">${rows.filter(j=>j.status==="confirmed").length} live jobs</b>
+          <div class="tiny">${rows.filter(j=>j.status==="hold").length} website hold${rows.filter(j=>j.status==="hold").length===1?"":"s"} · next free 1.5h: ${nextOpen(m.id)}</div>
+          <div style="margin-top:8px"><button class="btn sm gold" onclick="quickAdd('${m.id}')">Add ${m.name} job</button></div>
+        </div>`;
+      }).join("");
+    }
+    function quickAdd(id) { ui.market = id; openJob({ market:id }); }
+
+    function renderHoldRail() {
+      const waiting = holdsOpen();
+      const tab = document.getElementById("tabAdmin");
+      tab.innerHTML = waiting.length ? `Thomas master <span class="badge">${waiting.length}</span>` : "Thomas master";
+      const rail = document.getElementById("holdRail");
+      if (!waiting.length) {
+        rail.className = "hold-rail empty";
+        rail.innerHTML = `
+          <div class="kicker">Website bookings</div>
+          <h3>No holds right now</h3>
+          <p class="tiny">When a customer hits Instant Book on a REQUEST package, the gold box lands here. Instant packages skip this and go straight to confirmed.</p>`;
+        return;
+      }
+      rail.className = "hold-rail";
+      rail.innerHTML = `
+        <div class="kicker">Website bookings · do not scroll past this</div>
+        <h3>${waiting.length} website hold${waiting.length===1?"":"s"} waiting on you</h3>
+        <p class="tiny">A customer clicked Book Now. Slot is blocked on that city site. Not a locked job for the tech until you confirm.</p>
+        ${waiting.map(j => `
+          <div class="hold-item">
+            <div>
+              <b>${j.time} · ${M(j.market).name} · ${j.tech}</b>
+              <div class="tiny">${j.customer || "Website request"} · ${j.pkg}${j.addons ? " + " + j.addons : ""} · ${j.price || "no price"}</div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn sm good" onclick="setStatus('${j.id}','confirmed')">Confirm</button>
+              <button class="btn sm gold" onclick="openSheet('${j.id}')">Open</button>
+              <button class="btn sm bad" onclick="setStatus('${j.id}','cancelled')">Kill</button>
+            </div>
+          </div>`).join("")}`;
+    }
+
+    function renderAdmin() {
+      const rows = list(ui.day, ui.market)
+        .filter(j => !ui.holdOnly || j.status === "hold")
+        .sort((a,b) => (a.status==="hold"?0:1) - (b.status==="hold"?0:1) || parseMins(a.time) - parseMins(b.time) || a.market.localeCompare(b.market));
+      document.getElementById("listLabel").textContent = ui.market === "all" ? "Every city this day" : M(ui.market).name + " this day";
+      document.getElementById("adminJobs").innerHTML = rows.map(j => `
+        <div class="job ${j.id===ui.selected?"active":""}" onclick="openSheet('${j.id}')">
+          <div style="font-weight:700">${j.time}–${endLabel(j)} · ${j.customer || j.pkg}</div>
+          <div class="tiny">${j.tech} · ${j.pkg} · ${(j.mins||120)/60}h</div>
+          <div class="pills">
+            <span class="pill ${j.market}">${M(j.market).name}</span>
+            <span class="pill ${j.status}">${j.status}</span>
+          </div>
+        </div>`).join("") || `<div class="tiny">Nothing on this filter.</div>`;
+
+      const techs = (ui.market === "all" ? MARKETS : MARKETS.filter(m => m.id === ui.market))
+        .flatMap(m => m.techs.map(t => ({ tech:t, market:m.id })));
+      document.getElementById("calLabel").textContent = `30-min board · ${DAYS[ui.day].label}` + (ui.market==="all" ? " · all cities" : " · " + M(ui.market).name);
+      const cal = document.getElementById("adminCal");
+      cal.style.gridTemplateColumns = `64px repeat(${Math.max(techs.length,1)}, minmax(130px,1fr))`;
+      let html = `<div class="time-col"><div class="tick" style="min-height:28px"></div>${SLOTS.map((s,i)=>`<div class="tick ${s.includes(":30")?"half":""}">${s.replace(" AM","").replace(" PM","")}${i===0||s.endsWith("2:00 PM")||s.endsWith("8:00 AM")? (s.includes("PM")?"p":"a") : ""}</div>`).join("")}</div>`;
+      techs.forEach(t => {
+        html += `<div class="tech-col"><div class="tick" style="justify-content:center;min-height:28px;color:#eef2f6">${t.tech}<span class="tiny" style="margin-left:6px">${M(t.market).name}</span></div>`;
+        const used = new Set();
+        SLOTS.forEach((time, idx) => {
+          if (used.has(time)) return;
+          const hit = jobs.find(j => j.day===ui.day && j.tech===t.tech && j.status!=="cancelled" && j.time===time);
+          if (hit) {
+            const blocks = Math.max(1, Math.round((hit.mins || 120) / 30));
+            for (let i = 0; i < blocks; i++) if (SLOTS[idx+i]) used.add(SLOTS[idx+i]);
+            html += `<div class="block ${hit.status}" style="min-height:${blocks*34 + (blocks-1)*4}px" onclick="openSheet('${hit.id}')">
+              <b>${hit.customer || hit.pkg}</b>
+              <span class="tiny">${hit.time}–${endLabel(hit)} · ${hit.status}</span>
+            </div>`;
+          } else {
+            html += `<div class="open" onclick="openJob({market:'${t.market}', time:'${time}', tech:'${t.tech}'})">+</div>`;
+          }
+        });
+        html += `</div>`;
+      });
+      cal.innerHTML = html;
+    }
+
+    function renderPublic() {
+      document.getElementById("publicCities").innerHTML = MARKETS.map(m => `
+        <button class="city ${m.id} ${ui.publicMarket===m.id?"active":""}" onclick="setPublic('${m.id}')">
+          <b>${m.name} website</b>
+          <div class="meta">Only ${m.name} trucks</div>
+        </button>`).join("");
+      const m = M(ui.publicMarket);
+      document.getElementById("publicKicker").textContent = "Mobile detailing · " + m.name;
+      document.getElementById("publicTitle").textContent = m.name;
+      document.getElementById("publicBlurb").textContent = "This site only sells " + m.name + ". A phone job Thomas drops on the master board removes that start time here.";
+      const slots = [];
+      m.techs.forEach(tech => SLOTS.forEach(time => { if (!conflict(m.id, 0, time, 90, tech)) slots.push(time + " · " + tech); }));
+      document.getElementById("publicSlots").innerHTML = slots.slice(0, 14).map(s => `<div class="pill ${m.id}" style="margin:4px 4px 0 0;display:inline-flex">${s}</div>`).join("")
+        + (slots.length > 14 ? `<div class="tiny" style="margin-top:8px">+ ${slots.length-14} more open starts</div>` : "");
+    }
+    function setPublic(id) { ui.publicMarket = id; renderPublic(); }
+
+    function allTechs() { return MARKETS.flatMap(m => m.techs.map(name => ({ name, market:m.id, city:m.name }))); }
+    function loginTech(name) { ui.techUser = name; ui.techDay = 0; renderTech(); }
+    function logoutTech() { ui.techUser = null; renderTech(); }
+    function setTechDay(id) { ui.techDay = Number(id); renderTech(); }
+
+    function renderTech() {
+      const box = document.getElementById("techBoard");
+      if (!box) return;
+      if (!ui.techUser) {
+        box.innerHTML = `
+          <div class="login-card">
+            <div class="tiny">Detail Pros · tech app</div>
+            <h2 class="display" style="font-size:28px;margin-top:8px">Log in</h2>
+            <p class="muted" style="margin:8px 0 16px">Each man only sees his own truck. Pick a name like he would on his phone.</p>
+            ${allTechs().map(t => {
+              const n = jobs.filter(j => j.tech===t.name && j.day===0 && (j.status==="confirmed"||j.status==="done")).length;
+              return `<button class="tech-pick" onclick="loginTech('${t.name}')">
+                <b>${t.name}</b>
+                <div class="tiny">${t.city} · ${n} job${n===1?"":"s"} today</div>
+              </button>`;
+            }).join("")}
+          </div>`;
+        return;
+      }
+      const name = ui.techUser;
+      const city = techMarket(name);
+      const mine = jobs.filter(j => j.tech === name && j.day === ui.techDay && (j.status === "confirmed" || j.status === "done" || j.status === "blocked"))
+        .sort((a,b)=>parseMins(a.time)-parseMins(b.time));
+      const used = new Set();
+      let rows = "";
+      SLOTS.forEach((time, idx) => {
+        if (used.has(time)) return;
+        const hit = mine.find(j => j.time === time);
+        if (hit) {
+          const blocks = Math.max(1, Math.round((hit.mins || 120) / 30));
+          for (let i = 0; i < blocks; i++) if (SLOTS[idx+i]) used.add(SLOTS[idx+i]);
+          rows += `<div class="trow">
+            <div class="tiny" style="padding-top:10px;text-align:right">${time.replace(" AM","a").replace(" PM","p")}</div>
+            <button class="tjob ${hit.status}" style="min-height:${Math.max(52, blocks*28)}px" onclick="openTechTicket('${hit.id}')">
+              <b>${hit.status === "blocked" ? (hit.customer || "Blocked") : (hit.customer || hit.pkg)}</b>
+              <div class="tiny">${hit.time}–${endLabel(hit)} · ${hit.pkg}</div>
+              <div class="tiny">${hit.address || "Address on ticket"}</div>
+            </button>
+          </div>`;
+        } else {
+          used.add(time);
+          rows += `<div class="trow">
+            <div class="tiny" style="padding-top:6px;text-align:right">${time.replace(" AM","a").replace(" PM","p")}</div>
+            <div class="tfree"></div>
+          </div>`;
+        }
+      });
+      box.innerHTML = `
+        <div class="phone-bar">
+          <div>
+            <b>${name}</b>
+            <div class="tiny">${city ? city.name : ""} · logged in</div>
+          </div>
+          <button class="btn sm ghost" onclick="logoutTech()">Log out</button>
+        </div>
+        <div class="phone-cal">
+          ${notesFor(name).length ? `<div class="tiny" style="margin-bottom:6px">From Thomas</div>` + notesFor(name).slice(0,5).map(n => `
+            <div class="ping">
+              <div class="tiny">${n.to==="ALL"?"All trucks":"Just you"} · ${new Date(n.at).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</div>
+              <b style="display:block;margin-top:4px">${esc(n.body)}</b>
+            </div>`).join("") : ""}
+          <select onchange="setTechDay(this.value)" style="margin-bottom:12px">
+            ${DAYS.map(d => `<option value="${d.id}" ${d.id===ui.techDay?"selected":""}>${d.label}</option>`).join("")}
+          </select>
+          <div class="tiny" style="margin-bottom:8px">${mine.filter(j=>j.status==="confirmed").length} jobs on this truck · holds hidden</div>
+          ${rows}
+        </div>`;
+    }
+
+    function openNotify(preset) {
+      const who = preset || "ALL";
+      const lastJob = ui.selected && jobs.find(j => j.id === ui.selected);
+      const draft = lastJob && lastJob.tech ? `${lastJob.customer || lastJob.pkg} at ${lastJob.time}. ${lastJob.address || ""}`.trim() : "";
+      showModal(`
+        <div class="kicker">Dispatch</div>
+        <h2 class="display" style="font-size:26px">Notify tech</h2>
+        <p class="muted">Send to the app, or text / call their phone.</p>
+        <div class="form-grid" style="margin-top:14px">
+          <div class="full"><label>Who</label>
+            <select id="nTo">
+              <option value="ALL" ${who==="ALL"?"selected":""}>All techs</option>
+              ${allTechs().map(t => `<option value="${t.name}" ${who===t.name?"selected":""}>${t.name} · ${t.city} · ${TECH_PHONES[t.name]}</option>`).join("")}
+            </select>
+          </div>
+          <div class="full"><label>Message</label>
+            <textarea id="nBody" rows="4" placeholder="Running late. Grab the extra tank. New job dropped at 2.">${esc(draft)}</textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn gold" onclick="sendNotifyApp()">Send to their app</button>
+          <button class="btn good" onclick="textTech()">Text their phone</button>
+          <button class="btn ghost" onclick="callTech()">Call their phone</button>
+          <button class="btn ghost" onclick="closeModal()">Close</button>
+        </div>
+      `, true);
+    }
+    function notifyTargets() {
+      const to = document.getElementById("nTo")?.value || "ALL";
+      return to === "ALL" ? allTechs().map(t => t.name) : [to];
+    }
+    function sendNotifyApp() {
+      const body = document.getElementById("nBody")?.value.trim();
+      if (!body) return toast("Type the message.");
+      const to = document.getElementById("nTo").value;
+      notes.unshift({ id: uid(), to, body, at: Date.now() });
+      saveNotes();
+      closeModal();
+      render();
+      const names = to === "ALL" ? "every tech phone" : to + "’s app";
+      toast("Delivered to " + names + ". Open Tech phone and log in as them.");
+      const tab = document.getElementById("tabTech");
+      if (tab) tab.innerHTML = `Tech phone <span class="badge">${to==="ALL"?allTechs().length:1}</span>`;
+    }
+    function textTech() {
+      const body = document.getElementById("nBody")?.value.trim() || "";
+      const targets = notifyTargets();
+      if (targets.length > 1) {
+        toast("All-tech text in live is a group thread. Demo numbers: " + targets.map(n => n + " " + TECH_PHONES[n]).join(" · "));
+        return;
+      }
+      const n = targets[0];
+      toast("Demo. Live opens SMS to " + n + " at " + TECH_PHONES[n] + (body ? " — “" + body + "”" : ""));
+    }
+    function callTech() {
+      const targets = notifyTargets();
+      if (targets.length > 1) return toast("Pick one man to call. All-tech is send or text.");
+      const n = targets[0];
+      toast("Demo. Live dials " + n + " at " + TECH_PHONES[n] + ".");
+    }
+
+    function openTechTicket(id) {
+      const j = jobs.find(x => x.id === id);
+      if (!j) return;
+      showModal(`
+        <div class="kicker">${j.tech} · ticket</div>
+        <h2 class="display" style="font-size:24px">${j.customer || j.pkg}</h2>
+        <p class="muted">${j.time}–${endLabel(j)} · ${j.pkg}${j.addons ? " + " + j.addons : ""}</p>
+        <div class="tech-job" style="margin-top:14px">
+          <div class="kv">
+            <b>Phone</b><div>${j.phone || "—"}</div>
+            <b>Address</b><div>${j.address || "—"}</div>
+            <b>Gate / unit</b><div>${j.unit || "—"}</div>
+            <b>Which car</b><div>${j.parking || j.vehicle || "—"}</div>
+            <b>Water</b><div>${j.water || "—"}</div>
+            <b>Power</b><div>${j.power || "—"}</div>
+          </div>
+          <div class="kv">
+            <b>Dogs</b><div>${j.dogs || "—"}</div>
+            <b>HOA</b><div>${j.hoa || "—"}</div>
+            <b>Condition</b><div>${j.condition || "—"}</div>
+            <b>Money</b><div>${j.price || "—"} · ${j.deposit || "no deposit"}</div>
+            <b>Arrival</b><div>${j.eta || "—"}</div>
+            <b>Notes</b><div>${j.notes || "—"}</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn gold" onclick="toast('Demo only. Live app opens maps to that pin.')">Navigate</button>
+          <button class="btn good" onclick="toast('Demo only. Live app dials ${esc(j.phone) || "the customer"}')">Call customer</button>
+          <button class="btn ghost" onclick="setStatus('${j.id}','done')">Mark finished</button>
+          <button class="btn ghost" onclick="closeModal()">Close</button>
+        </div>
+      `, true);
+    }
+
+    function closeModal() { document.getElementById("modal").classList.add("hidden"); }
+    function showModal(html, sheet) {
+      const box = document.getElementById("modalBody");
+      box.className = "modal" + (sheet ? " sheet" : "");
+      box.innerHTML = html;
+      document.getElementById("modal").classList.remove("hidden");
+    }
+
+    function openSheet(id) {
+      const j = jobs.find(x => x.id === id);
+      if (!j) return;
+      ui.selected = id;
+      const techs = M(j.market).techs;
+      showModal(`
+        <div class="kicker">${M(j.market).name} · ${j.tech}</div>
+        <h2 class="display" style="font-size:24px">${j.customer || j.pkg}</h2>
+        <p class="muted">${j.time}–${endLabel(j)} · ${j.pkg} · ${j.status}</p>
+        <div class="actions">
+          <div><label>Move start time</label><select id="sTime">${SLOTS.map(s=>`<option ${s===j.time?"selected":""}>${s}</option>`).join("")}</select></div>
+          <div><label>Change technician</label><select id="sTech">${techs.map(t=>`<option ${t===j.tech?"selected":""}>${t}</option>`).join("")}</select></div>
+          <div><label>Duration</label><select id="sMins">${DURS.map(d=>`<option value="${d.mins}" ${d.mins===(j.mins||120)?"selected":""}>${d.label}</option>`).join("")}</select></div>
+        </div>
+        <div class="actions">
+          <button class="btn gold" onclick="applyMove('${j.id}')">Save move</button>
+          <button class="btn good" onclick="setStatus('${j.id}','confirmed')">Mark confirmed</button>
+          <button class="btn ghost" onclick="openNotify('${j.tech}')">Notify ${j.tech}</button>
+          <button class="btn ghost" onclick="openJob({existingId:'${j.id}'})">Edit full job ticket</button>
+          <button class="btn bad" onclick="setStatus('${j.id}','cancelled')">Cancel this job</button>
+          <button class="btn ghost" onclick="closeModal()">Close</button>
+        </div>
+      `, true);
+      renderAdmin();
+    }
+
+    function applyMove(id) {
+      const j = jobs.find(x => x.id === id);
+      const time = document.getElementById("sTime").value;
+      const tech = document.getElementById("sTech").value;
+      const mins = Number(document.getElementById("sMins").value);
+      const hit = conflict(j.market, j.day, time, mins, tech, id);
+      if (hit) return toast("Can't park that on " + tech + ". Overlaps " + (hit.customer || hit.pkg) + " " + hit.time + "–" + endLabel(hit) + ".");
+      j.time = time; j.tech = tech; j.mins = mins;
+      save(); closeModal(); render();
+      toast(j.customer + " moved to " + tech + " at " + time + ". " + M(j.market).name + " website updated. Other cities untouched.");
+    }
+    function setStatus(id, status) {
+      const j = jobs.find(x => x.id === id);
+      j.status = status;
+      save(); closeModal(); render();
+      toast(status === "cancelled" ? (j.customer || j.pkg) + " cancelled. Slot is open again." : (j.customer || j.pkg) + " marked " + status + ".");
+    }
+
+    function openBook() {
+      const m = M(ui.publicMarket);
+      ui.addons = [];
+      ui.size = "sedan";
+      showModal(`
+        <div class="kicker">${m.name} website · what the customer sees</div>
+        <h2 class="display">Instant Book</h2>
+        <p class="muted">Gold badge = this site can lock the slot. The others notify Thomas. He texts or calls.</p>
+        ${SERVICES.map(s => `
+          <button class="svc" onclick="openPublicCheckout('${s.id}')">
+            <div style="display:flex;justify-content:space-between;gap:10px;align-items:center">
+              <b>${s.name}</b>
+              <span class="pill ${s.instant?"confirmed":"hold"}">${s.instant?"INSTANT":"REQUEST"}</span>
+            </div>
+            <div class="tiny" style="margin-top:6px">${s.blurb}</div>
+            <div class="tiny" style="margin-top:4px">${s.prices.sedan ? "From " + money(s.prices.coupe) : "Quote"} · ${s.mins >= 60 ? (s.mins/60)+"h window" : s.mins+" min"}</div>
+          </button>`).join("")}
+        <div style="margin-top:12px"><button class="btn ghost" onclick="closeModal()">Close</button></div>`);
+    }
+    function openPublicCheckout(svcId) {
+      const s = SERVICES.find(x => x.id === svcId);
+      const m = M(ui.publicMarket);
+      ui.svc = svcId;
+      ui.addons = [];
+      const open = [];
+      m.techs.forEach(tech => SLOTS.forEach(time => { if (!conflict(m.id, 0, time, s.mins, tech)) open.push({ tech, time }); }));
+      showModal(`
+        <div class="kicker">${m.name} · ${s.instant ? "instant confirm" : "request only"}</div>
+        <h2 class="display">${s.name}</h2>
+        <div class="notice">${s.instant
+          ? "This locks the slot. Thomas sees it confirmed on the master board."
+          : "This does not lock a tech as a finished job. Thomas gets the hold, then texts or calls you to finish it."}</div>
+        <div class="form-grid" style="margin-top:14px">
+          <div><label>Vehicle size</label>
+            <select id="bSize" onchange="ui.size=this.value; refreshPublicPrice()">${SIZES.map(z=>`<option value="${z.id}" ${z.id==="sedan"?"selected":""}>${z.name}</option>`).join("")}</select>
+          </div>
+          <div><label>Live total</label><div class="price-live" id="bTotal">${calcPrice(s.id,"sedan",[])}</div></div>
+          <div class="full"><label>Add-ons — tap to add</label>
+            <div class="addon-bar" id="bAddons">${addonButtons()}</div>
+          </div>
+          ${s.instant ? `<div class="full"><label>Open ${m.name} starts</label>
+            <select id="bSlot">${open.length ? open.map(x=>`<option value="${x.time}|${x.tech}">${x.time} · ${x.tech}</option>`).join("") : `<option>Full</option>`}</select>
+          </div>` : `<div class="full"><label>Preferred window (optional)</label>
+            <select id="bSlot">${open.length ? `<option value="">Anytime — Thomas will text</option>` + open.map(x=>`<option value="${x.time}|${x.tech}">Prefer ${x.time} · ${x.tech}</option>`).join("") : `<option value="">Thomas will find a time</option>`}</select>
+          </div>`}
+          <div><label>Name</label><input id="bName"></div>
+          <div><label>Phone</label><input id="bPhone"></div>
+          <div class="full"><label>Address / gate</label><input id="bAddr" placeholder="Street + gate code if you have one"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn gold" onclick="submitPublic()">${s.instant ? "Lock this time" : "Send request"}</button>
+          <button class="btn ghost" onclick="openBook()">Back to packages</button>
+        </div>`);
+    }
+    function addonButtons() {
+      return ADDONS.map(a => `<button type="button" class="addon ${ui.addons.includes(a.id)?"on":""}" onclick="toggleAddon('${a.id}')">${a.name} · $${a.price}</button>`).join("");
+    }
+    function toggleAddon(id) {
+      if (ui.addons.includes(id)) ui.addons = ui.addons.filter(x => x !== id);
+      else ui.addons.push(id);
+      const bar = document.getElementById("bAddons") || document.getElementById("jAddons");
+      if (bar) bar.innerHTML = addonButtons();
+      refreshPublicPrice();
+      refreshJobPrice();
+    }
+    function refreshPublicPrice() {
+      const el = document.getElementById("bTotal");
+      const sizeEl = document.getElementById("bSize");
+      if (sizeEl) ui.size = sizeEl.value;
+      if (el) el.textContent = calcPrice(ui.svc, ui.size, ui.addons);
+    }
+    function submitPublic() {
+      const s = SERVICES.find(x => x.id === ui.svc);
+      const market = ui.publicMarket;
+      const raw = document.getElementById("bSlot")?.value || "";
+      const name = document.getElementById("bName").value.trim();
+      const phone = document.getElementById("bPhone").value.trim();
+      if (!name || !phone) return toast("Name and phone only. That is the whole form.");
+      let time = "8:00 AM", tech = M(market).techs[0];
+      if (raw.includes("|")) { [time, tech] = raw.split("|"); }
+      else if (s.instant) return toast("No open starts.");
+      else {
+        const found = SLOTS.map(t => M(market).techs.map(tech2 => ({ time:t, tech:tech2 }))).flat()
+          .find(x => !conflict(market, 0, x.time, s.mins, x.tech));
+        if (found) { time = found.time; tech = found.tech; }
+      }
+      if (conflict(market, 0, time, s.mins, tech)) return toast("That start just filled.");
+      const sizeName = SIZES.find(z => z.id === ui.size)?.name || "";
+      const price = calcPrice(s.id, ui.size, ui.addons);
+      const addons = addonNames(ui.addons);
+      jobs.push(J({
+        market, day:0, time, mins:s.mins, tech,
+        status: s.instant ? "confirmed" : "hold",
+        customer: name, phone, address: document.getElementById("bAddr").value,
+        unit:"", water:"", power:"", parking:"", dogs:"", hoa:"",
+        vehicle: sizeName, condition:"", pkg: s.name, addons, price,
+        deposit: s.instant ? "Website booked" : "Unconfirmed",
+        source: s.instant ? "Website instant" : "Website request",
+        notes: s.instant ? "" : "Hold. Thomas texts or calls.",
+        eta: s.instant ? "Text 15 min out" : "Confirm by phone"
+      }));
+      upsertLeadFromJob(jobs[jobs.length-1]);
+      save(); closeModal();
+      document.querySelector('[data-view="admin"]').click();
+      toast(s.instant
+        ? name + " is confirmed on " + tech + " at " + time + ". " + M(market).name + " site lost that slot."
+        : name + " is on the hold rail. Slot blocked on " + M(market).name + " until you confirm or kill it.");
+    }
+
+    function openJob(opts = {}) {
+      if (typeof opts === "string") { try { opts = eval("(" + opts + ")"); } catch { opts = {}; } }
+      const existing = opts.existing || (opts.existingId && jobs.find(j => j.id === opts.existingId));
+      const presetMarket = opts.market || existing?.market || (ui.market === "all" ? "orlando" : ui.market);
+      const j = existing || {
+        market: presetMarket, day: ui.day, time: opts.time || "8:00 AM", tech: opts.tech || M(presetMarket).techs[0],
+        mins: opts.block ? 60 : 120, status: opts.block ? "blocked" : "confirmed",
+        customer: opts.block ? "BLOCKED TIME" : "", phone:"", address:"", unit:"",
+        water:"Yes", power:"Yes", parking:"", dogs:"", hoa:"", vehicle:"", condition:"",
+        pkg: opts.block ? "Blocked" : "Signature Detail", addons:"", price:"$179.95", deposit:"",
+        source: opts.block ? "Internal" : "Phone", notes:"", eta:"Text 15 min out"
+      };
+      ui.addons = ADDONS.filter(a => (j.addons || "").includes(a.name)).map(a => a.id);
+      ui.svc = (svcByName(j.pkg) || SERVICES[0]).id;
+      ui.size = "sedan";
+      showModal(`
+        <div class="kicker">${existing ? "Edit job" : opts.block ? "Block a tech" : "Phone job"}</div>
+        <h2 class="display">${j.customer || "New job"}</h2>
+        <div class="form-grid">
+          <div><label>City</label><select id="jMarket">${MARKETS.map(m=>`<option value="${m.id}" ${m.id===j.market?"selected":""}>${m.name}</option>`).join("")}</select></div>
+          <div><label>Day</label><select id="jDay">${DAYS.map(d=>`<option value="${d.id}" ${d.id===j.day?"selected":""}>${d.label}</option>`).join("")}</select></div>
+          <div><label>Start</label><select id="jTime">${SLOTS.map(h=>`<option ${h===j.time?"selected":""}>${h}</option>`).join("")}</select></div>
+          <div><label>How long</label><select id="jMins">${DURS.map(d=>`<option value="${d.mins}" ${d.mins===(j.mins||120)?"selected":""}>${d.label}</option>`).join("")}</select></div>
+          <div><label>Tech</label><select id="jTech">${techOptions(j.market, j.tech)}</select></div>
+          <div><label>Status</label><select id="jStatus">${["confirmed","hold","blocked","done","cancelled"].map(s=>`<option ${s===j.status?"selected":""}>${s}</option>`).join("")}</select></div>
+          <div><label>Customer</label><input id="jCust" value="${esc(j.customer)}"></div>
+          <div><label>Phone</label><input id="jPhone" value="${esc(j.phone)}"></div>
+          <div class="full"><label>Address</label><input id="jAddr" value="${esc(j.address)}"></div>
+          <div><label>Gate / lockbox</label><input id="jUnit" value="${esc(j.unit)}"></div>
+          <div><label>Arrival</label><input id="jEta" value="${esc(j.eta)}"></div>
+          <div><label>Water</label><input id="jWater" value="${esc(j.water)}"></div>
+          <div><label>Power</label><input id="jPower" value="${esc(j.power)}"></div>
+          <div class="full"><label>Parking / which car</label><input id="jPark" value="${esc(j.parking)}"></div>
+          <div><label>Dogs</label><input id="jDogs" value="${esc(j.dogs)}"></div>
+          <div><label>HOA</label><input id="jHoa" value="${esc(j.hoa)}"></div>
+          <div><label>Vehicle / size</label>
+            <select id="jSize" onchange="ui.size=this.value; refreshJobPrice()">
+              ${SIZES.map(z=>`<option value="${z.id}" ${z.id===ui.size?"selected":""}>${z.name}</option>`).join("")}
+            </select>
+            <input id="jVeh" value="${esc(j.vehicle)}" placeholder="Year make model · color" style="margin-top:6px">
+          </div>
+          <div><label>Package</label>
+            <select id="jPkg" onchange="syncJobService()">${PACKAGES.concat(["Blocked"]).map(p=>`<option ${p===j.pkg?"selected":""}>${p}</option>`).join("")}</select>
+          </div>
+          <div class="full"><label>Add-ons — tap to open</label>
+            <div class="addon-bar" id="jAddons">${addonButtons()}</div>
+          </div>
+          <div><label>Price (auto)</label><input id="jPrice" value="${esc(j.price)}"></div>
+          <div><label>Deposit</label><input id="jDep" value="${esc(j.deposit)}"></div>
+          <div class="full"><label>Condition</label><input id="jCond" value="${esc(j.condition)}"></div>
+          <div class="full"><label>Notes for the tech</label><textarea id="jNotes" rows="3">${esc(j.notes)}</textarea></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn gold" onclick="saveJob('${existing ? existing.id : ""}')">Save</button>
+          ${opts.block ? "" : `<button class="btn ghost" onclick="openInvoice()">Create invoice</button>`}
+          ${existing ? `<button class="btn bad" onclick="setStatus('${existing.id}','cancelled')">Cancel job</button>` : ""}
+          <button class="btn ghost" onclick="closeModal()">Close</button>
+        </div>`);
+      document.getElementById("jMarket").onchange = () => {
+        document.getElementById("jTech").innerHTML = techOptions(document.getElementById("jMarket").value);
+      };
+      refreshJobPrice();
+    }
+    function syncJobService() {
+      const name = document.getElementById("jPkg")?.value;
+      const s = svcByName(name);
+      if (s) {
+        ui.svc = s.id;
+        const mins = document.getElementById("jMins");
+        if (mins) mins.value = String(s.mins);
+      }
+      refreshJobPrice();
+    }
+    function refreshJobPrice() {
+      const el = document.getElementById("jPrice");
+      const pkg = document.getElementById("jPkg")?.value;
+      const size = document.getElementById("jSize")?.value || ui.size;
+      if (size) ui.size = size;
+      const s = svcByName(pkg);
+      if (el && s) el.value = calcPrice(s.id, ui.size, ui.addons);
+    }
+    function techOptions(market, selected) { return M(market).techs.map(t => `<option ${t===selected?"selected":""}>${t}</option>`).join(""); }
+    function esc(s) { return String(s || "").replace(/"/g,"&quot;").replace(/</g,"&lt;"); }
+    function saveJob(id) {
+      const payload = {
+        market: document.getElementById("jMarket").value,
+        day: Number(document.getElementById("jDay").value),
+        time: document.getElementById("jTime").value,
+        mins: Number(document.getElementById("jMins").value),
+        tech: document.getElementById("jTech").value,
+        status: document.getElementById("jStatus").value,
+        customer: document.getElementById("jCust").value,
+        phone: document.getElementById("jPhone").value,
+        address: document.getElementById("jAddr").value,
+        unit: document.getElementById("jUnit").value,
+        eta: document.getElementById("jEta").value,
+        water: document.getElementById("jWater").value,
+        power: document.getElementById("jPower").value,
+        parking: document.getElementById("jPark").value,
+        dogs: document.getElementById("jDogs").value,
+        hoa: document.getElementById("jHoa").value,
+        vehicle: document.getElementById("jVeh").value,
+        pkg: document.getElementById("jPkg").value,
+        addons: addonNames(ui.addons),
+        price: document.getElementById("jPrice").value,
+        deposit: document.getElementById("jDep").value,
+        condition: document.getElementById("jCond").value,
+        notes: document.getElementById("jNotes").value
+      };
+      if (payload.status !== "cancelled") {
+        const hit = conflict(payload.market, payload.day, payload.time, payload.mins, payload.tech, id || "new");
+        if (hit) return toast("That overlaps " + (hit.customer || hit.pkg) + " on " + payload.tech + ".");
+      }
+      if (id) Object.assign(jobs.find(j => j.id === id), payload);
+      else jobs.push(J(payload));
+      save(); closeModal(); render();
+      toast(M(payload.market).name + " · " + payload.tech + " · " + payload.time + "–" + labelMins(parseMins(payload.time)+payload.mins) + " locked.");
+      upsertLeadFromJob(payload);
+    }
+
+    function upsertLeadFromJob(j) {
+      const name = (j.customer || "").trim();
+      if (!name || name === "BLOCKED TIME" || name === "TRAVEL" || name === "Website request") return;
+      const existing = leads.find(l => l.phone && j.phone && l.phone === j.phone) || leads.find(l => l.name === name && l.market === j.market);
+      const row = {
+        name, phone: j.phone || "", email: j.email || existing?.email || "",
+        market: j.market, address: j.address || "", vehicle: j.vehicle || "",
+        lastJob: [j.pkg, j.addons].filter(Boolean).join(" + "),
+        cost: j.price || "", lastSeen: "Today",
+        notes: [j.condition, j.notes].filter(Boolean).join(" · ")
+      };
+      if (existing) Object.assign(existing, row);
+      else leads.unshift(row);
+      saveLeads();
+    }
+
+    function filteredLeads() {
+      return leads.filter(l => {
+        const cityOk = !ui.camp || ui.campCity === "all" || l.market === ui.campCity;
+        if (!cityOk) return false;
+        if (!ui.leadQ) return true;
+        const blob = [l.name, l.phone, l.vehicle, l.address, l.notes, l.lastJob].join(" ").toLowerCase();
+        return blob.includes(ui.leadQ);
+      });
+    }
+
+    function renderLeads() {
+      document.getElementById("campButtons").innerHTML = CAMPAIGNS.map(c => `
+        <button class="camp ${ui.camp===c.id?"active":""}" onclick="pickCamp('${c.id}')">
+          <b>${c.name}</b>
+          <div class="tiny">${c.blurb}</div>
+        </button>`).join("");
+      const camp = CAMPAIGNS.find(c => c.id === ui.camp);
+      const rows = filteredLeads();
+      document.getElementById("leadCount").textContent = rows.length + " clients" + (ui.camp ? " in this campaign cut" : " in the book");
+      document.getElementById("leadBody").innerHTML = rows.map((l, i) => `
+        <tr>
+          <td><b>${esc(l.name)}</b><div class="tiny">${M(l.market).name}</div></td>
+          <td>${esc(l.vehicle)}</td>
+          <td>${esc(l.phone)}<div class="tiny">${esc(l.email)}</div></td>
+          <td>${esc(l.address)}</td>
+          <td>${esc(l.lastJob)}<div class="tiny">${esc(l.cost)} · ${esc(l.lastSeen)}</div></td>
+          <td>${esc(l.notes)}</td>
+        </tr>`).join("") || `<tr><td colspan="6" class="tiny">No clients in this cut.</td></tr>`;
+
+      if (!camp) {
+        document.getElementById("campWizard").innerHTML = `<div class="tiny">Pick a campaign card above. Then pick a city. Create campaign downloads a CSV + a text file with the message already filled per customer.</div>`;
+        return;
+      }
+      const preview = rows.slice(0, 3).map(l => fillSms(camp.sms, l)).join("\n\n") || "No clients in that city.";
+      document.getElementById("campWizard").innerHTML = `
+        <div class="kicker">${camp.name}</div>
+        <h3 style="margin:6px 0 10px">${camp.blurb}</h3>
+        <div class="form-grid">
+          <div>
+            <label>Run this in</label>
+            <select id="campCity" onchange="ui.campCity=this.value; renderLeads()">
+              <option value="orlando" ${ui.campCity==="orlando"?"selected":""}>Orlando only</option>
+              <option value="jax" ${ui.campCity==="jax"?"selected":""}>Jacksonville only</option>
+              <option value="tampa" ${ui.campCity==="tampa"?"selected":""}>Tampa only</option>
+              <option value="all" ${ui.campCity==="all"?"selected":""}>All cities</option>
+            </select>
+          </div>
+          <div>
+            <label>Who gets it</label>
+            <div style="padding-top:10px;font-weight:700">${rows.length} ${ui.campCity==="all"?"clients":M(ui.campCity).name + " clients"}</div>
+          </div>
+          <div class="full"><label>Message preview</label><div class="preview">${esc(preview)}</div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn gold" onclick="createCampaign()">Create campaign — download files</button>
+          <button class="btn ghost" onclick="ui.camp=null; renderLeads()">Clear</button>
+        </div>`;
+    }
+
+    function pickCamp(id) { ui.camp = id; renderLeads(); }
+    function fillSms(tpl, l) {
+      return tpl.replaceAll("{name}", l.name.split(" ")[0])
+        .replaceAll("{city}", M(l.market).name)
+        .replaceAll("{car}", l.vehicle || "vehicle")
+        .replaceAll("{phone}", M(l.market).phone);
+    }
+    function csvEscape(v) { return `"${String(v || "").replace(/"/g, '""')}"`; }
+    function download(name, text, type) {
+      const blob = new Blob([text], { type });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    function createCampaign() {
+      const camp = CAMPAIGNS.find(c => c.id === ui.camp);
+      if (!camp) return toast("Pick a campaign first.");
+      const rows = filteredLeads();
+      if (!rows.length) return toast("No clients in that city cut.");
+      const city = ui.campCity === "all" ? "all-cities" : ui.campCity;
+      const stamp = new Date().toISOString().slice(0,10);
+      const header = ["name","phone","email","city","address","vehicle","last_job","last_cost","last_seen","notes","message"];
+      const csv = [header.join(",")].concat(rows.map(l => [
+        l.name, l.phone, l.email, M(l.market).name, l.address, l.vehicle, l.lastJob, l.cost, l.lastSeen, l.notes, fillSms(camp.sms, l)
+      ].map(csvEscape).join(","))).join("\n");
+      const txt = camp.name.toUpperCase() + " · " + city + " · " + rows.length + " contacts\n\n" +
+        rows.map(l => l.phone + "  " + l.name + "\n" + fillSms(camp.sms, l)).join("\n\n");
+      download(`detail-pros-${camp.id}-${city}-${stamp}.csv`, csv, "text/csv");
+      setTimeout(() => download(`detail-pros-${camp.id}-${city}-${stamp}-messages.txt`, txt, "text/plain"), 250);
+      toast(camp.name + " ready. " + rows.length + " " + (ui.campCity==="all"?"clients":M(ui.campCity).name + " clients") + ". CSV + text file downloaded. Drop the CSV in Google Contacts, Mailchimp, or iMessage.");
+    }
+
+    function openLead() {
+      showModal(`
+        <div class="kicker">New client</div>
+        <h2 class="display">Add to the book</h2>
+        <div class="form-grid">
+          <div><label>Name</label><input id="lName"></div>
+          <div><label>City</label><select id="lMarket">${MARKETS.map(m=>`<option value="${m.id}">${m.name}</option>`).join("")}</select></div>
+          <div><label>Phone</label><input id="lPhone"></div>
+          <div><label>Email</label><input id="lEmail"></div>
+          <div class="full"><label>Address</label><input id="lAddr"></div>
+          <div><label>Car</label><input id="lVeh"></div>
+          <div><label>Last job / cost</label><input id="lJob" placeholder="Signature · $169.95"></div>
+          <div class="full"><label>Notes</label><textarea id="lNotes" rows="3"></textarea></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button class="btn gold" onclick="saveLead()">Save client</button>
+          <button class="btn ghost" onclick="closeModal()">Close</button>
+        </div>`);
+    }
+    function saveLead() {
+      const name = document.getElementById("lName").value.trim();
+      if (!name) return toast("Name first.");
+      leads.unshift({
+        name, phone: document.getElementById("lPhone").value, email: document.getElementById("lEmail").value,
+        market: document.getElementById("lMarket").value, address: document.getElementById("lAddr").value,
+        vehicle: document.getElementById("lVeh").value, lastJob: document.getElementById("lJob").value,
+        cost: "", lastSeen: "Added today", notes: document.getElementById("lNotes").value
+      });
+      saveLeads(); closeModal(); renderLeads();
+      toast(name + " is in the book.");
+    }
+
+    // allow inline onclick object literals from generated HTML
+    window.openJob = openJob;
+    window.openSheet = openSheet;
+    window.setMarket = setMarket;
+    window.quickAdd = quickAdd;
+    window.setPublic = setPublic;
+    window.applyMove = applyMove;
+    window.setStatus = setStatus;
+    window.saveJob = saveJob;
+    window.submitPublic = submitPublic;
+    window.openPublicCheckout = openPublicCheckout;
+    window.toggleAddon = toggleAddon;
+    window.refreshPublicPrice = refreshPublicPrice;
+    window.refreshJobPrice = refreshJobPrice;
+    window.syncJobService = syncJobService;
+    window.closeModal = closeModal;
+    window.pickCamp = pickCamp;
+    window.createCampaign = createCampaign;
+    window.saveLead = saveLead;
+    function val(id) { return document.getElementById(id)?.value?.trim() || ""; }
+    function parseMoney(s) {
+      const n = Number(String(s || "").replace(/[^0-9.]/g, ""));
+      return Number.isFinite(n) ? n : 0;
+    }
+    function closeInvoice() { document.getElementById("invoiceModal").classList.add("hidden"); }
+    function openInvoice() {
+      if (!document.getElementById("jCust")) return toast("Open a phone job first.");
+      const market = val("jMarket");
+      const city = M(market);
+      const pkg = val("jPkg") || "Detail service";
+      const sizeId = val("jSize") || ui.size;
+      const sizeName = SIZES.find(z => z.id === sizeId)?.name || "";
+      const svc = svcByName(pkg);
+      const base = svc ? (svc.prices[sizeId] || 0) : parseMoney(val("jPrice"));
+      const addonRows = ADDONS.filter(a => ui.addons.includes(a.id));
+      const addonTotal = addonRows.reduce((n, a) => n + a.price, 0);
+      const entered = parseMoney(val("jPrice"));
+      const subtotal = entered || (base + addonTotal);
+      const depositRaw = val("jDep");
+      const deposit = parseMoney(depositRaw);
+      const balance = Math.max(0, subtotal - deposit);
+      const no = "DP-" + new Date().toISOString().slice(0,10).replace(/-/g,"") + "-" + (val("jPhone").slice(-4) || "0000");
+      const dayLabel = DAYS.find(d => String(d.id) === val("jDay"))?.label || "";
+      const lines = [
+        { name: pkg + (sizeName ? " · " + sizeName : ""), note: val("jVeh") || val("jPark") || "Vehicle", amt: base || (addonRows.length ? subtotal - addonTotal : subtotal) },
+        ...addonRows.map(a => ({ name: a.name, note: "Add-on", amt: a.price }))
+      ];
+      document.getElementById("invoiceBody").innerHTML = `
+        <div class="invoice" id="invoicePaper">
+          <div class="invoice-top">
+            <div class="invoice-brand">
+              <div class="invoice-mark">DP</div>
+              <div>
+                <h3>Detail Pros <em>${city.name}, Inc.</em></h3>
+                <div class="invoice-tag">Mobile detailing · 100% satisfaction · We come to you</div>
+              </div>
+            </div>
+            <div class="invoice-right">
+              <b style="color:#fff;font-size:18px;letter-spacing:.14em">INVOICE</b>
+              <div style="margin-top:8px">${no}</div>
+              <div>${city.phone}</div>
+              <div>detailprosorlando.com</div>
+            </div>
+          </div>
+          <div class="invoice-body">
+            <div class="invoice-meta">
+              <div>
+                <div class="tiny" style="color:#6b6256">BILL TO</div>
+                <b style="font-size:16px">${esc(val("jCust") || "Customer")}</b>
+                <div>${esc(val("jPhone") || "")}</div>
+                <div>${esc(val("jAddr") || "")}</div>
+                <div>${esc(val("jVeh") || sizeName)}</div>
+              </div>
+              <div>
+                <div class="tiny" style="color:#6b6256">SERVICE</div>
+                <div>${esc(dayLabel)} · ${esc(val("jTime"))}</div>
+                <div>Tech: ${esc(val("jTech"))}</div>
+                <div>Market: ${esc(city.name)}</div>
+                <div>Due on completion</div>
+              </div>
+            </div>
+            <table>
+              <thead><tr><th>Description</th><th class="amt">Amount</th></tr></thead>
+              <tbody>
+                ${lines.map(l => `<tr><td><b>${esc(l.name)}</b><div class="tiny" style="color:#6b6256">${esc(l.note)}</div></td><td class="amt">${l.amt ? money(l.amt) : "Quote"}</td></tr>`).join("")}
+              </tbody>
+            </table>
+            <div class="invoice-total">
+              <table>
+                <tr><td>Subtotal</td><td class="amt">${money(subtotal)}</td></tr>
+                <tr><td>Deposit received</td><td class="amt">${deposit ? money(deposit) : "—"}</td></tr>
+                <tr><td><b>Balance due</b></td><td class="amt"><b>${money(balance)}</b></td></tr>
+              </table>
+            </div>
+            <div class="invoice-pay">
+              <b>Pay this invoice</b>
+              <div class="tiny" style="color:#6b6256;margin:6px 0 10px">Live version attaches Square, Stripe, or his current processor. Demo shows the handoff.</div>
+              <div class="invoice-actions">
+                <button class="btn gold" onclick="toast('Demo. Live invoice opens his card processor with ${money(balance)} due.')">Pay by card</button>
+                <button class="btn ghost" onclick="toast('Demo. Live invoice shows Zelle / Cash App to the shop.')" style="color:#161410;border-color:#c9c0b3">Pay Zelle / Cash App</button>
+                <button class="btn ghost" onclick="printInvoice()" style="color:#161410;border-color:#c9c0b3">Print / PDF</button>
+              </div>
+            </div>
+            <p class="tiny" style="margin-top:16px;color:#6b6256">Detail Pros ${esc(city.name)} Inc. · Mobile service. Balance due when the job is finished unless a deposit is noted. Questions: ${esc(city.phone)}</p>
+          </div>
+        </div>
+        <div class="invoice-actions">
+          <button class="btn gold" onclick="toast('Demo. Live send emails or texts this PDF to the customer.')">Send to customer</button>
+          <button class="btn ghost" onclick="closeInvoice()">Close preview</button>
+        </div>`;
+      document.getElementById("invoiceModal").classList.remove("hidden");
+    }
+    function printInvoice() {
+      const html = document.getElementById("invoicePaper")?.outerHTML;
+      if (!html) return;
+      const w = window.open("", "_blank");
+      w.document.write(`<!doctype html><title>Invoice</title><style>body{margin:0;background:#fff;font-family:Inter,Arial,sans-serif} ${document.querySelector("style").innerHTML}</style>${html}</body>`);
+      w.document.close();
+      w.focus();
+      w.print();
+    }
+
+    window.openLead = openLead;
+    window.openInvoice = openInvoice;
+    window.closeInvoice = closeInvoice;
+    window.printInvoice = printInvoice;
+    window.loginTech = loginTech;
+    window.logoutTech = logoutTech;
+    window.setTechDay = setTechDay;
+    window.openTechTicket = openTechTicket;
+    window.openNotify = openNotify;
+    window.sendNotifyApp = sendNotifyApp;
+    window.textTech = textTech;
+    window.callTech = callTech;
+
+    render();
+  </script>
+</body>
+</html>
