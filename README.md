@@ -1,2 +1,1 @@
-# rgw-ops-live
-Working preview page
+Working preview. Open index.html.
